@@ -1,47 +1,92 @@
-// mad-libs-starter - code in React
-// original file: cyoa-inputs.js (from JD)
+// two page app using React components
 // -rolf
 
 import React, { Component } from "react";
 
 import "./styles.css";
 
-var pages = {
-  start: {
-    content: (getData, setData) => (
+// var pages = {
+//   start: {
+//     content: (getData, setData) => (
+//       <p>
+//         Let's play a game!
+//         <br />
+//         But first, what is your name?
+//         <br />
+//         <input
+//           type="text"
+//           value={getData("name")}
+//           onChange={event => setData("name", event.target.value)}
+//         />
+//       </p>
+//     ),
+//     buttons: [{ label: "Get Started", page: "welcome" }]
+//   },
+//   welcome: {
+//     content: (getData, setData) => <p>Welcome {getData("name")}!</p>,
+//     buttons: [{ label: "Next", page: "start" }]
+//   }
+// };
+
+class StartPage extends Component {
+  render() {
+    var nameStyle = {
+      //border: "2px solid red"
+    };
+
+    return (
       <p>
         Let's play a game!
+        <br />
         <br />
         But first, what is your name?
         <br />
         <input
           type="text"
-          value={getData("name")}
-          onChange={event => setData("name", event.target.value)}
+          style={nameStyle}
+          value={this.props.getData("name")}
+          onChange={event => this.props.setData("name", event.target.value)}
         />
+        <br />
+        <br />
+        <button onClick={() => this.props.goToPage(WelcomePage)}>
+          Continue...
+        </button>
       </p>
-    ),
-    buttons: [{ label: "Get Started", page: "welcome" }]
-  },
-  welcome: {
-    content: (getData, setData) => <p>Welcome {getData("name")}!</p>,
-    buttons: [{ label: "Next", page: "start" }]
+    );
   }
-};
+}
+
+class WelcomePage extends Component {
+  render() {
+    return (
+      <p>
+        Welcome {this.props.getData("name")}!
+        <br />
+        We don't have a game at the moment.. sorry!
+        <br />
+        <br />
+        <button onClick={() => this.props.goToPage(StartPage)}>
+          Start Over
+        </button>
+      </p>
+    );
+  }
+}
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      page: "start",
+      page: StartPage,
       name: ""
     };
   }
 
-  goToPage(pageName) {
+  goToPage(page) {
     this.setState({
-      page: pageName
+      page: page
     });
   }
 
@@ -56,19 +101,15 @@ class App extends Component {
   }
 
   render() {
-    var pageData = pages[this.state.page];
+    //var pageData = pages[this.state.page];
 
     return (
       <div className="App">
-        {pageData.content(
-          dataName => this.getData(dataName),
-          (name, value) => this.setData(name, value)
-        )}
-        {pageData.buttons.map(buttonInfo => (
-          <button onClick={() => this.goToPage(buttonInfo.page)}>
-            {buttonInfo.label}
-          </button>
-        ))}
+        <this.state.page
+          getData={name => this.getData(name)}
+          setData={(name, value) => this.setData(name, value)}
+          goToPage={page => this.goToPage(page)}
+        />
       </div>
     );
   }
